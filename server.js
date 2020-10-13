@@ -1,12 +1,14 @@
 var express = require('express');
 var request = require('request-promise');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 var app = express();
 
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended : true}));
 
-mongoose.connect('mongodb+srv://metalmilitia:wC3p8oWQB2CQSIWA@cluster0.h1ppu.mongodb.net/weather_db?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://metalmilitia:wC3p8oWQB2CQSIWA@cluster0.h1ppu.mongodb.net/weather_db?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true});
 
 var citySchema = new mongoose.Schema({
     name : String
@@ -48,6 +50,12 @@ app.get('/', function(req, res) {
             res.render('weather', weather_data);
         });
     });
+});
+
+app.post('/', function(req, res) {
+    var newCity = new cityModel({name : req.body.city_name});
+    newCity.save();
+    res.redirect('/');
 });
 
 app.listen(8000);
